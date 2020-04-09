@@ -2,13 +2,19 @@
 
 namespace App;
 
+use App\Jobs\SendEmail;
+use App\Mail\ResetPassword;
+use App\Mail\VerificationEmail;
+use App\Services\Auth\Traits\HasTwoFactor;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Services\Auth\Traits\MagicallyAuthenticable;
+
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, MagicallyAuthenticable,HasTwoFactor;
 
     /**
      * The attributes that are mass assignable.
@@ -16,7 +22,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','phone_number'
     ];
 
     /**
@@ -35,5 +41,15 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-    ];
+    ]; 
+
+    public function sendEmailVerificationNotification()
+    {
+        sendEmail::dispatch($this,new VerificationEmail($this)); 
+    } 
+
+    public function sendPasswordResetNotification($token)
+    {
+       SendEmail::dispatchNow($this,new ResetPassword($this,$token)) ;
+    }
 }
