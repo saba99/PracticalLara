@@ -6,5 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    //
+    public function hasStock(int $quantity){
+
+        return $this->stock >= $quantity;
+    }
+
+    private function decrementStock(int $count){
+
+      return $this->decrement('stock',$count);
+    }
 }

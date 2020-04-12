@@ -3,6 +3,7 @@
 use App\Mail\TopicCreated;
 use App\Mail\UserRegistered;
 use App\Services\Notification\Notification;
+use App\Support\Storage\Contracts\StorageInterface;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
@@ -87,7 +88,32 @@ Route::get('register','RegisterController@showRegisterationForm')->name('auth.re
     Route::get('two-factor/code','TwoFactorController@ShowEnterCodeForm')->name('auth.two.factor.code.form');
 
 
+
+    
+
+
 }); 
+Route::get('products','ProductController@index')->name('products.index');
+
+Route::get('basket/add/{product}','BasketController@add')->name('basket.add');
+
+Route::get('basket/clear',function(){
+
+resolve(StorageInterface::class)->clear();
+
+});
+Route::get('basket','BasketController@index')->name('basket.index');
+
+
+Route::post('basket/update/{product}','BasketController@update')->name('basket.update');
+
+Route::get('basket/checkout','BasketController@checkoutForm')->name('basket.checkout.form');
+
+Route::post('basket/checkout/post','BasketController@checkout')->name('basket.checkout');
+
+Route::post('payment/{gateway}/callback','PaymentController@verify')->name('payment.verify');
+
+
 
 Route::get('verify',function(Request $request){
 
